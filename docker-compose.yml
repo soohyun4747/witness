@@ -1,0 +1,15 @@
+services:
+  db:
+    image: postgres:16
+    container_name: witness_db
+    environment:
+      POSTGRES_USER: witness
+      POSTGRES_PASSWORD: witness_pw
+      POSTGRES_DB: witness
+    ports:
+      - "5432:5432"
+    volumes:
+      - witness_pgdata:/var/lib/postgresql/data
+
+volumes:
+  witness_pgdata:
