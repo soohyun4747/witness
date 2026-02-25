@@ -79,7 +79,18 @@ export const repo = {
     writeDb(db);
   },
   upsertStation: (id: string | undefined, name: string, description?: string) => { const db = readDb(); const t = now(); if (id) { db.stations = db.stations.map((s) => s.id === id ? { ...s, name, description, updatedAt: t } : s); } else { db.stations.push({ id: randomUUID(), name, description, createdAt: t, updatedAt: t }); } writeDb(db); },
+  deleteStation: (id: string) => {
+    const db = readDb();
+    db.stations = db.stations.filter((s) => s.id !== id);
+    db.devices = db.devices.map((d) => d.assignedStationId === id ? { ...d, assignedStationId: undefined } : d);
+    writeDb(db);
+  },
   upsertDevice: (id: string | undefined, name: string, deviceCode: string, assignedStationId?: string) => { const db = readDb(); const t = now(); if (id) { db.devices = db.devices.map((d) => d.id === id ? { ...d, name, deviceCode, assignedStationId, updatedAt: t } : d); } else { db.devices.push({ id: randomUUID(), name, deviceCode, assignedStationId, createdAt: t, updatedAt: t }); } writeDb(db); },
+  deleteDevice: (id: string) => {
+    const db = readDb();
+    db.devices = db.devices.filter((d) => d.id !== id);
+    writeDb(db);
+  },
   upsertUser: (id: string | undefined, email: string, name: string, role: Role, password?: string) => { const db = readDb(); const t = now(); if (id) { db.users = db.users.map((u) => u.id === id ? { ...u, email, name, role, ...(password ? { passwordHash: hashPassword(password) } : {}), updatedAt: t } : u); } else { db.users.push({ id: randomUUID(), email, name, role, passwordHash: hashPassword(password || 'changeme123'), isActive: true, createdAt: t, updatedAt: t }); } writeDb(db); },
   deactivateUser: (id: string) => { const db = readDb(); db.users = db.users.map((u) => u.id === id ? { ...u, isActive: false } : u); writeDb(db); },
 };

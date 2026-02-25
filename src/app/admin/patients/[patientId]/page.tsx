@@ -1,4 +1,4 @@
-import { createCaseAction, printSpermBottleDirect } from '@/app/admin/actions';
+import { createCaseAction, printSpermBottleDirect, printWristbandDirect } from '@/app/admin/actions';
 import PatientCaseTable from '@/components/admin/PatientCaseTable';
 import { requireSession } from '@/lib/auth';
 import { repo } from '@/lib/store';
@@ -38,7 +38,13 @@ export default async function PatientDetail({ params }: { params: Promise<{ pati
 
       <div className="card stack">
         <h2 style={{ margin: 0 }}>케이스 목록</h2>
-        <PatientCaseTable cases={cases} logs={db.printHistory} movementLogs={movementLogs} printAction={printSpermBottleDirect} />
+        <PatientCaseTable
+          cases={cases}
+          logs={db.printHistory}
+          movementLogs={movementLogs}
+          printSpermBottleAction={printSpermBottleDirect}
+          printWristbandAction={printWristbandDirect}
+        />
       </div>
     </div>
   );

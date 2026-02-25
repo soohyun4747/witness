@@ -1,4 +1,5 @@
 import { deactivateUser, saveUser } from '@/app/admin/actions';
+import Modal from '@/components/ui/Modal';
 import { requireSession } from '@/lib/auth';
 import { repo } from '@/lib/store';
 
@@ -17,18 +18,15 @@ export default async function UsersPage() {
     <div className="stack">
       <div className="page-header">
         <h1 className="page-title">사용자 관리</h1>
-        <details className="popup">
-          <summary>사용자 추가</summary>
-          <div className="popup-body">
-            <form action={saveUser} className="stack" style={{ minWidth: 340 }}>
-              <div className="field"><label className="field-label" htmlFor="name">이름</label><input id="name" className="input" name="name" required /></div>
-              <div className="field"><label className="field-label" htmlFor="email">이메일</label><input id="email" className="input" name="email" required /></div>
-              <div className="field"><label className="field-label" htmlFor="role">사용자 종류</label><select id="role" className="select" name="role"><option value="ADMIN">관리자</option><option value="STAFF">연구원</option></select></div>
-              <div className="field"><label className="field-label" htmlFor="password">초기 비밀번호</label><input id="password" className="input" name="password" type="password" required /></div>
-              <button className="btn">저장</button>
-            </form>
-          </div>
-        </details>
+        <Modal title="사용자 추가" triggerLabel="사용자 추가">
+          <form action={saveUser} className="stack" style={{ minWidth: 340 }}>
+            <div className="field"><label className="field-label" htmlFor="name">이름</label><input id="name" className="input" name="name" required /></div>
+            <div className="field"><label className="field-label" htmlFor="email">이메일</label><input id="email" className="input" name="email" required /></div>
+            <div className="field"><label className="field-label" htmlFor="role">사용자 종류</label><select id="role" className="select" name="role"><option value="ADMIN">관리자</option><option value="STAFF">연구원</option></select></div>
+            <div className="field"><label className="field-label" htmlFor="password">초기 비밀번호</label><input id="password" className="input" name="password" type="password" required /></div>
+            <button className="btn">저장</button>
+          </form>
+        </Modal>
       </div>
 
       <div className="card">

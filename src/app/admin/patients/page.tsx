@@ -30,13 +30,14 @@ export default async function PatientsPage({ searchParams }: { searchParams: Pro
           {rows.map((p) => {
             const cases = db.cases.filter((c) => c.patientId === p.id);
             const latest = cases.at(-1)?.status || '-';
+            const detailHref = `/admin/patients/${p.id}`;
             return (
               <tr key={p.id}>
-                <td><Link href={`/admin/patients/${p.id}`}>{p.fullName}</Link></td>
-                <td>{p.chartNo || '-'}</td>
-                <td>{p.birthDate || '-'}</td>
-                <td><span className={`badge ${latest === 'ACTIVE' ? 'active' : ''}`}>{latest}</span></td>
-                <td>{p.createdAt.slice(0, 10)}</td>
+                <td><Link className="table-row-link" href={detailHref}>{p.fullName}</Link></td>
+                <td><Link className="table-row-link" href={detailHref}>{p.chartNo || '-'}</Link></td>
+                <td><Link className="table-row-link" href={detailHref}>{p.birthDate || '-'}</Link></td>
+                <td><Link className="table-row-link" href={detailHref}><span className={`badge ${latest === 'ACTIVE' ? 'active' : ''}`}>{latest}</span></Link></td>
+                <td><Link className="table-row-link" href={detailHref}>{p.createdAt.slice(0, 10)}</Link></td>
               </tr>
             );
           })}
