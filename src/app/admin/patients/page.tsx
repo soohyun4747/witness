@@ -1,7 +1,8 @@
-import Link from 'next/link';
 import { createPatientAction } from '@/app/admin/actions';
+import PatientCreateModal from '@/components/admin/PatientCreateModal';
 import { requireSession } from '@/lib/auth';
 import { repo } from '@/lib/store';
+import Link from 'next/link';
 
 export default async function PatientsPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
   await requireSession(['ADMIN', 'STAFF', 'AUDITOR']);
@@ -13,19 +14,7 @@ export default async function PatientsPage({ searchParams }: { searchParams: Pro
     <div className="stack">
       <div className="page-header">
         <h1 className="page-title">환자 관리</h1>
-        <details className="popup">
-          <summary>환자 추가</summary>
-          <div className="popup-body">
-            <form action={createPatientAction} className="stack" style={{ minWidth: 340 }}>
-              <div className="field"><label className="field-label" htmlFor="fullName">이름</label><input id="fullName" className="input" name="fullName" required /></div>
-              <div className="field"><label className="field-label" htmlFor="chartNo">차트번호</label><input id="chartNo" className="input" name="chartNo" /></div>
-              <div className="field"><label className="field-label" htmlFor="birthDate">생년월일</label><input id="birthDate" className="input" name="birthDate" type="date" /></div>
-              <div className="field"><label className="field-label" htmlFor="phone">연락처</label><input id="phone" className="input" name="phone" /></div>
-              <div className="field"><label className="field-label" htmlFor="memo">메모</label><textarea id="memo" className="textarea" name="memo" /></div>
-              <button className="btn" type="submit">저장</button>
-            </form>
-          </div>
-        </details>
+        <PatientCreateModal action={createPatientAction} />
       </div>
 
       <form className="card stack">

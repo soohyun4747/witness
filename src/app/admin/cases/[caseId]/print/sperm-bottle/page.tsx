@@ -1,4 +1,3 @@
-import { markSamplesPrinted } from '@/app/admin/actions';
 import BarcodeSvg from '@/components/barcode/BarcodeSvg';
 import PrintControls from '@/components/print/PrintControls';
 import { requireSession } from '@/lib/auth';
@@ -15,9 +14,7 @@ export default async function SpermBottlePrint({ params, searchParams }: { param
 
   return <div>
     <PrintControls />
-    <form action={async () => { 'use server'; await markSamplesPrinted(samples.map((s) => s.id), caseId, researcherName); }} className="no-print" style={{ marginBottom: 8 }}>
-      <button className="btn" type="submit">인쇄 완료 (기록 저장)</button>
-    </form>
+    <div className="card no-print" style={{ marginBottom: 8, width: 'fit-content' }}>출력 준비 완료</div>
     <div style={{ display: 'grid', gap: 8 }}>
       {samples.map((s) => (
         <div key={s.id} className="card" style={{ width: '60mm' }}>

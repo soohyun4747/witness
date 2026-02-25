@@ -41,6 +41,19 @@ export async function createSpermBottleSamples(caseId: string, count: number) {
   return repo.createSamples(caseId, Math.max(1, Math.min(10, count))).map((s) => s.id);
 }
 
+
+export async function printSpermBottleDirect(formData: FormData) {
+  await requireSession(['ADMIN', 'STAFF']);
+  const caseId = String(formData.get('caseId') || '');
+  const count = Number(formData.get('count') || 1);
+  const researcher = String(formData.get('researcherName') || '').trim();
+  const sampleIds = repo.createSamples(caseId, Math.max(1, Math.min(10, count))).map((sample) => sample.id);
+  repo.markSamplesPrinted(sampleIds);
+  repo.addPrintHistory(caseId, 'SPERM_BOTTLE', researcher || '미기입', `샘플 ${sampleIds.length}개 출력`);
+  const q = new URLSearchParams({ count: String(count), researcherName: researcher }).toString();
+  redirect(`/admin/cases/${caseId}/print/sperm-bottle?${q}`);
+}
+
 export async function createSamplesAndRedirect(formData: FormData) {
   const caseId = String(formData.get('caseId'));
   const count = Number(formData.get('count') || 1);

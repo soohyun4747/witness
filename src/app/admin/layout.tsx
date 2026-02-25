@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import NavLink from '@/components/ui/NavLink';
 
 const navItems = [
   { href: '/admin', label: '대시보드' },
@@ -14,9 +14,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       <aside className="sidebar">
         <nav className="nav">
           {navItems.map((item) => (
-            <Link key={item.href} href={item.href} className="nav-link">
-              {item.label}
-            </Link>
+            <NavLink key={item.href} href={item.href} label={item.label} />
           ))}
         </nav>
       </aside>
