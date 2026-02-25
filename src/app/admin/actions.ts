@@ -44,13 +44,16 @@ export async function createSpermBottleSamples(caseId: string, count: number) {
 export async function createSamplesAndRedirect(formData: FormData) {
   const caseId = String(formData.get('caseId'));
   const count = Number(formData.get('count') || 1);
+  const researcher = String(formData.get('researcherName') || '').trim();
   await createSpermBottleSamples(caseId, count);
-  redirect(`/admin/cases/${caseId}/print/sperm-bottle?count=${count}`);
+  const q = new URLSearchParams({ count: String(count), researcherName: researcher }).toString();
+  redirect(`/admin/cases/${caseId}/print/sperm-bottle?${q}`);
 }
 
-export async function markSamplesPrinted(sampleIds: string[]) {
+export async function markSamplesPrinted(sampleIds: string[], caseId: string, researcherName: string) {
   await requireSession(['ADMIN', 'STAFF']);
   repo.markSamplesPrinted(sampleIds);
+  repo.addPrintHistory(caseId, 'SPERM_BOTTLE', researcherName || '미기입', `샘플 ${sampleIds.length}개 출력`);
 }
 
 export async function saveStation(formData: FormData) {
@@ -58,16 +61,19 @@ export async function saveStation(formData: FormData) {
   repo.upsertStation(String(formData.get('id') || '') || undefined, String(formData.get('name') || ''), String(formData.get('description') || '') || undefined);
   redirect('/admin/stations');
 }
+
 export async function saveDevice(formData: FormData) {
   await requireSession(['ADMIN']);
   repo.upsertDevice(String(formData.get('id') || '') || undefined, String(formData.get('name') || ''), String(formData.get('deviceCode') || ''), String(formData.get('assignedStationId') || '') || undefined);
-  redirect('/admin/devices');
+  redirect('/admin/stations');
 }
+
 export async function saveUser(formData: FormData) {
   await requireSession(['ADMIN']);
   repo.upsertUser(String(formData.get('id') || '') || undefined, String(formData.get('email') || ''), String(formData.get('name') || ''), String(formData.get('role') || 'STAFF') as Role, String(formData.get('password') || '') || undefined);
   redirect('/admin/users');
 }
+
 export async function deactivateUser(formData: FormData) {
   await requireSession(['ADMIN']);
   repo.deactivateUser(String(formData.get('id') || ''));
@@ -76,4 +82,9 @@ export async function deactivateUser(formData: FormData) {
 
 export async function wristbandValue(caseId: string) {
   return barcodeForCase(caseId);
+}
+
+export async function saveWristbandPrint(caseId: string, printedBy: string) {
+  await requireSession(['ADMIN', 'STAFF']);
+  repo.addPrintHistory(caseId, 'WRISTBAND', printedBy || '미기입');
 }

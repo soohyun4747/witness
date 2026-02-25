@@ -12,7 +12,7 @@ export default async function PatientDetail({ params }: { params: Promise<{ pati
 
   const cases = db.cases
     .filter((c) => c.patientId === patientId)
-    .sort((a, b) => (a.status === 'ACTIVE' ? -1 : b.status === 'ACTIVE' ? 1 : 0));
+    .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
 
   return (
     <div className="stack">
@@ -21,6 +21,7 @@ export default async function PatientDetail({ params }: { params: Promise<{ pati
         <div className="row muted">
           <span>차트번호: {patient.chartNo || '-'}</span>
           <span>생년월일: {patient.birthDate || '-'}</span>
+          <span>연락처: {patient.phone || '-'}</span>
         </div>
         <form action={async () => { 'use server'; await createCaseAction(patientId); }}>
           <button className="btn">새 케이스 생성</button>
@@ -28,14 +29,33 @@ export default async function PatientDetail({ params }: { params: Promise<{ pati
       </div>
 
       <div className="card stack">
-        <h2 style={{ margin: 0 }}>케이스</h2>
-        <ul className="stack" style={{ margin: 0, paddingInlineStart: 20 }}>
-          {cases.map((c) => (
-            <li key={c.id}>
-              <Link href={`/admin/cases/${c.id}`}>{c.id}</Link> <span className={`badge ${c.status === 'ACTIVE' ? 'active' : ''}`}>{c.status}</span>
-            </li>
-          ))}
-        </ul>
+        <h2 style={{ margin: 0 }}>케이스 목록</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>날짜</th>
+              <th>케이스 번호</th>
+              <th>상태</th>
+              <th>작업</th>
+            </tr>
+          </thead>
+          <tbody>
+            {cases.map((c) => (
+              <tr key={c.id}>
+                <td>{c.createdAt.slice(0, 10)}</td>
+                <td><Link href={`/admin/cases/${c.id}`}>{c.id.slice(0, 8)}</Link></td>
+                <td><span className={`badge ${c.status === 'ACTIVE' ? 'active' : ''}`}>{c.status}</span></td>
+                <td>
+                  <div className="actions-cell">
+                    <Link className="btn btn-link" href={`/admin/cases/${c.id}/print/wristband`}>팔찌 바코드 출력</Link>
+                    <Link className="btn btn-link" href={`/admin/cases/${c.id}`}>정자 보틀 라벨 출력</Link>
+                    <Link className="btn btn-link btn-muted" href={`/admin/cases/${c.id}`}>동선 확인</Link>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );

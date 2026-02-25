@@ -1,7 +1,10 @@
 import './globals.css';
 import Link from 'next/link';
+import { getSession } from '@/lib/auth';
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const session = await getSession();
+
   return (
     <html lang="ko">
       <body className="app-shell">
@@ -10,7 +13,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <span className="brand-dot" />
             Witness Admin
           </Link>
-          <span className="muted" style={{ fontSize: 13 }}>On-prem Hospital Workflow</span>
+          <div className="topbar-user">
+            {session ? (
+              <>
+                <strong>{session.email}</strong>
+                <span className="badge">{session.role === 'ADMIN' ? '관리자' : '연구원'}</span>
+              </>
+            ) : (
+              <span className="muted" style={{ fontSize: 13 }}>로그인 필요</span>
+            )}
+          </div>
         </header>
         {children}
       </body>

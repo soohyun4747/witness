@@ -2,9 +2,17 @@ import { randomUUID, scryptSync, timingSafeEqual } from 'crypto';
 import fs from 'fs';
 import path from 'path';
 import { barcodeForSample } from './barcode';
-import { Case, Device, Patient, Role, Sample, Station, User } from './types';
+import { Case, Device, Patient, PrintHistory, Role, Sample, Station, User } from './types';
 
-interface Db { users: User[]; patients: Patient[]; cases: Case[]; samples: Sample[]; stations: Station[]; devices: Device[]; }
+interface Db {
+  users: User[];
+  patients: Patient[];
+  cases: Case[];
+  samples: Sample[];
+  stations: Station[];
+  devices: Device[];
+  printHistory: PrintHistory[];
+}
 const dbPath = path.join(process.cwd(), 'data.json');
 
 function now() { return new Date().toISOString(); }
@@ -13,14 +21,27 @@ function readDb(): Db {
     const t = now();
     const seed: Db = {
       users: [{ id: randomUUID(), email: 'admin@local', passwordHash: hashPassword(process.env.SEED_ADMIN_PASSWORD || 'admin1234'), name: '관리자', role: 'ADMIN', isActive: true, createdAt: t, updatedAt: t }],
-      patients: [], cases: [], samples: [],
+      patients: [],
+      cases: [],
+      samples: [],
       stations: ['접수', '채취실', '수술실', '회복실'].map((name) => ({ id: randomUUID(), name, createdAt: t, updatedAt: t })),
       devices: [],
+      printHistory: [],
     };
     fs.writeFileSync(dbPath, JSON.stringify(seed, null, 2));
     return seed;
   }
-  return JSON.parse(fs.readFileSync(dbPath, 'utf8')) as Db;
+
+  const raw = JSON.parse(fs.readFileSync(dbPath, 'utf8')) as Partial<Db>;
+  return {
+    users: raw.users || [],
+    patients: raw.patients || [],
+    cases: raw.cases || [],
+    samples: raw.samples || [],
+    stations: raw.stations || [],
+    devices: raw.devices || [],
+    printHistory: raw.printHistory || [],
+  };
 }
 function writeDb(db: Db) { fs.writeFileSync(dbPath, JSON.stringify(db, null, 2)); }
 
@@ -52,6 +73,11 @@ export const repo = {
     return created;
   },
   markSamplesPrinted: (sampleIds: string[]) => { const db = readDb(); const t = now(); db.samples = db.samples.map((s) => sampleIds.includes(s.id) ? { ...s, printedAt: t } : s); writeDb(db); },
+  addPrintHistory: (caseId: string, type: 'WRISTBAND' | 'SPERM_BOTTLE', printedBy: string, note?: string) => {
+    const db = readDb();
+    db.printHistory.push({ id: randomUUID(), caseId, type, printedBy, printedAt: now(), note });
+    writeDb(db);
+  },
   upsertStation: (id: string | undefined, name: string, description?: string) => { const db = readDb(); const t = now(); if (id) { db.stations = db.stations.map((s) => s.id === id ? { ...s, name, description, updatedAt: t } : s); } else { db.stations.push({ id: randomUUID(), name, description, createdAt: t, updatedAt: t }); } writeDb(db); },
   upsertDevice: (id: string | undefined, name: string, deviceCode: string, assignedStationId?: string) => { const db = readDb(); const t = now(); if (id) { db.devices = db.devices.map((d) => d.id === id ? { ...d, name, deviceCode, assignedStationId, updatedAt: t } : d); } else { db.devices.push({ id: randomUUID(), name, deviceCode, assignedStationId, createdAt: t, updatedAt: t }); } writeDb(db); },
   upsertUser: (id: string | undefined, email: string, name: string, role: Role, password?: string) => { const db = readDb(); const t = now(); if (id) { db.users = db.users.map((u) => u.id === id ? { ...u, email, name, role, ...(password ? { passwordHash: hashPassword(password) } : {}), updatedAt: t } : u); } else { db.users.push({ id: randomUUID(), email, name, role, passwordHash: hashPassword(password || 'changeme123'), isActive: true, createdAt: t, updatedAt: t }); } writeDb(db); },

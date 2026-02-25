@@ -10,8 +10,8 @@ export default function LoginPage() {
           <p className="muted">로컬 병원 서버 계정으로 로그인하세요.</p>
         </div>
         <form action={loginAction} className="stack">
-          <input className="input" name="email" placeholder="email" defaultValue="admin@local" />
-          <input className="input" name="password" type="password" placeholder="password" />
+          <div className="field"><label className="field-label" htmlFor="email">이메일</label><input id="email" className="input" name="email" defaultValue="admin@local" /></div>
+          <div className="field"><label className="field-label" htmlFor="password">비밀번호</label><input id="password" className="input" name="password" type="password" /></div>
           <button className="btn" type="submit">로그인</button>
         </form>
       </div>
