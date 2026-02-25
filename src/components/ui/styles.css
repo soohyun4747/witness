@@ -1,0 +1,5 @@
+.input, .select, .textarea { border: 1px solid #cbd5e1; padding: 8px; border-radius: 6px; width: 100%; }
+.btn { background: #111827; color: #fff; padding: 8px 12px; border-radius: 6px; }
+.card { border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px; }
+table { width: 100%; border-collapse: collapse; }
+th, td { border-bottom: 1px solid #e5e7eb; text-align: left; padding: 8px; }
