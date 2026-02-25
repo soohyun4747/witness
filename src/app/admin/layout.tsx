@@ -1,22 +1,35 @@
 import Link from 'next/link';
 import { getSession } from '@/lib/auth';
 
+const navItems = [
+  { href: '/admin', label: '대시보드' },
+  { href: '/admin/patients', label: '환자' },
+  { href: '/admin/stations', label: '구역' },
+  { href: '/admin/devices', label: '디바이스' },
+  { href: '/admin/users', label: '사용자' },
+  { href: '/logout', label: '로그아웃' },
+];
+
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const session = await getSession();
+
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '220px 1fr', minHeight: '100vh' }}>
-      <aside style={{ borderRight: '1px solid #ddd', padding: 12, background: '#fff' }}>
-        <p><b>{session?.email}</b> ({session?.role})</p>
-        <nav style={{ display: 'grid', gap: 6 }}>
-          <Link href="/admin">대시보드</Link>
-          <Link href="/admin/patients">환자</Link>
-          <Link href="/admin/stations">구역</Link>
-          <Link href="/admin/devices">디바이스</Link>
-          <Link href="/admin/users">사용자</Link>
-          <Link href="/logout">로그아웃</Link>
+    <div className="admin-grid">
+      <aside className="sidebar">
+        <div className="user-card">
+          <div style={{ fontWeight: 700, color: '#e2e8f0' }}>{session?.email}</div>
+          <div>{session?.email}</div>
+          <span className="badge" style={{ marginTop: 8 }}>{session?.role}</span>
+        </div>
+        <nav className="nav">
+          {navItems.map((item) => (
+            <Link key={item.href} href={item.href} className="nav-link">
+              {item.label}
+            </Link>
+          ))}
         </nav>
       </aside>
-      <main>{children}</main>
+      <main className="page-wrap">{children}</main>
     </div>
   );
 }

@@ -9,9 +9,34 @@ export default async function PatientDetail({ params }: { params: Promise<{ pati
   const db = repo.getDb();
   const patient = db.patients.find((p) => p.id === patientId);
   if (!patient) return <div>Not found</div>;
-  const cases = db.cases.filter((c) => c.patientId === patientId).sort((a,b)=> a.status === 'ACTIVE' ? -1 : b.status === 'ACTIVE' ? 1 : 0);
-  return <div><h1>{patient.fullName}</h1><p>차트번호: {patient.chartNo || '-'}</p><p>생년월일: {patient.birthDate || '-'}</p>
-    <form action={async ()=>{'use server'; await createCaseAction(patientId);}}><button className="btn">새 케이스 생성</button></form>
-    <h2>케이스</h2><ul>{cases.map((c) => <li key={c.id}><Link href={`/admin/cases/${c.id}`}>{c.id} - {c.status}</Link></li>)}</ul>
-  </div>;
+
+  const cases = db.cases
+    .filter((c) => c.patientId === patientId)
+    .sort((a, b) => (a.status === 'ACTIVE' ? -1 : b.status === 'ACTIVE' ? 1 : 0));
+
+  return (
+    <div className="stack">
+      <div className="card stack">
+        <h1 className="page-title" style={{ marginBottom: 0 }}>{patient.fullName}</h1>
+        <div className="row muted">
+          <span>차트번호: {patient.chartNo || '-'}</span>
+          <span>생년월일: {patient.birthDate || '-'}</span>
+        </div>
+        <form action={async () => { 'use server'; await createCaseAction(patientId); }}>
+          <button className="btn">새 케이스 생성</button>
+        </form>
+      </div>
+
+      <div className="card stack">
+        <h2 style={{ margin: 0 }}>케이스</h2>
+        <ul className="stack" style={{ margin: 0, paddingInlineStart: 20 }}>
+          {cases.map((c) => (
+            <li key={c.id}>
+              <Link href={`/admin/cases/${c.id}`}>{c.id}</Link> <span className={`badge ${c.status === 'ACTIVE' ? 'active' : ''}`}>{c.status}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
 }

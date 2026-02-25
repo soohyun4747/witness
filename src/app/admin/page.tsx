@@ -4,14 +4,18 @@ import { repo } from '@/lib/store';
 export default async function AdminDashboard() {
   await requireSession(['ADMIN', 'STAFF', 'AUDITOR']);
   const db = repo.getDb();
+
   return (
-    <div>
-      <h1>관리자 대시보드</h1>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 8 }}>
-        <div className="card">환자 {db.patients.length}</div>
-        <div className="card">케이스 {db.cases.length}</div>
-        <div className="card">샘플 {db.samples.length}</div>
-        <div className="card">디바이스 {db.devices.length}</div>
+    <div className="stack">
+      <div className="page-header">
+        <h1 className="page-title">관리자 대시보드</h1>
+        <span className="muted">실시간 운영 요약</span>
+      </div>
+      <div className="kpi-grid">
+        <div className="card"><div className="muted">환자</div><h2>{db.patients.length}</h2></div>
+        <div className="card"><div className="muted">케이스</div><h2>{db.cases.length}</h2></div>
+        <div className="card"><div className="muted">샘플</div><h2>{db.samples.length}</h2></div>
+        <div className="card"><div className="muted">디바이스</div><h2>{db.devices.length}</h2></div>
       </div>
     </div>
   );
