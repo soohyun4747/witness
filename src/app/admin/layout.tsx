@@ -17,7 +17,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     <div className="admin-grid">
       <aside className="sidebar">
         <div className="user-card">
-          <div style={{ fontWeight: 700, color: '#e2e8f0' }}>{session?.email}</div>
+          <div style={{ fontWeight: 700 }}>{session?.email}</div>
           <div>{session?.email}</div>
           <span className="badge" style={{ marginTop: 8 }}>{session?.role}</span>
         </div>
