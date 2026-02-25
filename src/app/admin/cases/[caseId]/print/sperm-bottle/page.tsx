@@ -3,14 +3,13 @@ import PrintControls from '@/components/print/PrintControls';
 import { requireSession } from '@/lib/auth';
 import { repo } from '@/lib/store';
 
-export default async function SpermBottlePrint({ params, searchParams }: { params: Promise<{ caseId: string }>; searchParams: Promise<{ count?: string; researcherName?: string }> }) {
+export default async function SpermBottlePrint({ params, searchParams }: { params: Promise<{ caseId: string }>; searchParams: Promise<{ researcherName?: string }> }) {
   await requireSession(['ADMIN', 'STAFF']);
   const { caseId } = await params;
   const query = await searchParams;
-  const count = Number(query.count || 1);
   const researcherName = query.researcherName || '';
   const db = repo.getDb();
-  const samples = db.samples.filter((s) => s.caseId === caseId).slice(-count);
+  const samples = db.samples.filter((s) => s.caseId === caseId).slice(-1);
 
   return <div>
     <PrintControls />

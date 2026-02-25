@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import Modal from '@/components/ui/Modal';
 import { PrintHistory } from '@/lib/types';
 
@@ -14,12 +13,14 @@ export default function PatientCaseTable({
   cases,
   logs,
   movementLogs,
-  printAction,
+  printSpermBottleAction,
+  printWristbandAction,
 }: {
   cases: CaseRow[];
   logs: PrintHistory[];
   movementLogs: Record<string, string[]>;
-  printAction: (formData: FormData) => void;
+  printSpermBottleAction: (formData: FormData) => void;
+  printWristbandAction: (formData: FormData) => void;
 }) {
   return (
     <table>
@@ -43,13 +44,18 @@ export default function PatientCaseTable({
               <td><span className={`badge ${c.status === 'ACTIVE' ? 'active' : ''}`}>{c.status}</span></td>
               <td>
                 <div className="actions-cell">
-                  <Link className="btn btn-link" href={`/admin/cases/${c.id}/print/wristband`}>팔찌 바코드 출력</Link>
+                  <Modal title="팔찌 바코드 출력" triggerLabel="팔찌 바코드 출력" triggerClassName="btn btn-link">
+                    <form action={printWristbandAction} className="stack" style={{ minWidth: 320 }}>
+                      <input type="hidden" name="caseId" value={c.id} />
+                      <div className="field"><label className="field-label" htmlFor={`wristband-researcher-${c.id}`}>연구원 이름</label><input id={`wristband-researcher-${c.id}`} className="input" name="researcherName" required /></div>
+                      <button className="btn" type="submit">바로 출력</button>
+                    </form>
+                  </Modal>
 
                   <Modal title="정자 보틀 라벨 출력" triggerLabel="정자 보틀 라벨 출력" triggerClassName="btn btn-link">
-                    <form action={printAction} className="stack" style={{ minWidth: 320 }}>
+                    <form action={printSpermBottleAction} className="stack" style={{ minWidth: 320 }}>
                       <input type="hidden" name="caseId" value={c.id} />
                       <div className="field"><label className="field-label" htmlFor={`researcher-${c.id}`}>연구원 이름</label><input id={`researcher-${c.id}`} className="input" name="researcherName" required /></div>
-                      <div className="field"><label className="field-label" htmlFor={`count-${c.id}`}>출력 수량(1~10)</label><input id={`count-${c.id}`} className="input" name="count" type="number" min={1} max={10} defaultValue={1} /></div>
                       <button className="btn" type="submit">바로 출력</button>
                     </form>
                   </Modal>

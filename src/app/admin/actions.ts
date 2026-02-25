@@ -45,12 +45,12 @@ export async function createSpermBottleSamples(caseId: string, count: number) {
 export async function printSpermBottleDirect(formData: FormData) {
   await requireSession(['ADMIN', 'STAFF']);
   const caseId = String(formData.get('caseId') || '');
-  const count = Number(formData.get('count') || 1);
   const researcher = String(formData.get('researcherName') || '').trim();
-  const sampleIds = repo.createSamples(caseId, Math.max(1, Math.min(10, count))).map((sample) => sample.id);
+  const count = 1;
+  const sampleIds = repo.createSamples(caseId, count).map((sample) => sample.id);
   repo.markSamplesPrinted(sampleIds);
   repo.addPrintHistory(caseId, 'SPERM_BOTTLE', researcher || '미기입', `샘플 ${sampleIds.length}개 출력`);
-  const q = new URLSearchParams({ count: String(count), researcherName: researcher }).toString();
+  const q = new URLSearchParams({ researcherName: researcher }).toString();
   redirect(`/admin/cases/${caseId}/print/sperm-bottle?${q}`);
 }
 
@@ -75,9 +75,21 @@ export async function saveStation(formData: FormData) {
   redirect('/admin/stations');
 }
 
+export async function deleteStation(formData: FormData) {
+  await requireSession(['ADMIN']);
+  repo.deleteStation(String(formData.get('id') || ''));
+  redirect('/admin/stations');
+}
+
 export async function saveDevice(formData: FormData) {
   await requireSession(['ADMIN']);
   repo.upsertDevice(String(formData.get('id') || '') || undefined, String(formData.get('name') || ''), String(formData.get('deviceCode') || ''), String(formData.get('assignedStationId') || '') || undefined);
+  redirect('/admin/stations');
+}
+
+export async function deleteDevice(formData: FormData) {
+  await requireSession(['ADMIN']);
+  repo.deleteDevice(String(formData.get('id') || ''));
   redirect('/admin/stations');
 }
 
@@ -100,4 +112,13 @@ export async function wristbandValue(caseId: string) {
 export async function saveWristbandPrint(caseId: string, printedBy: string) {
   await requireSession(['ADMIN', 'STAFF']);
   repo.addPrintHistory(caseId, 'WRISTBAND', printedBy || '미기입');
+}
+
+export async function printWristbandDirect(formData: FormData) {
+  await requireSession(['ADMIN', 'STAFF']);
+  const caseId = String(formData.get('caseId') || '');
+  const researcher = String(formData.get('researcherName') || '').trim();
+  repo.addPrintHistory(caseId, 'WRISTBAND', researcher || '미기입');
+  const q = new URLSearchParams({ researcherName: researcher }).toString();
+  redirect(`/admin/cases/${caseId}/print/wristband?${q}`);
 }
